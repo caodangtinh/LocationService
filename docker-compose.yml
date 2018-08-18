@@ -1,0 +1,38 @@
+version: '3'
+services:
+  mysql:
+    image: mysql
+    container_name: location-service-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: root
+      MYSQL_DATABASE: 'location'
+    restart: always
+    volumes:
+    - mysql_data:/var/lib/mysql:rw
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    ports:
+    - 8181:80
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: root
+      PMA_HOST: mysql
+    depends_on:
+    - mysql
+    links:
+    - mysql:mysql
+  location-services:
+    build:
+      context: ../LocationService/
+    ports:
+    - 8080:8080
+    - 8081:8081
+    depends_on:
+    - mysql
+    container_name: location-services-container
+
+
+volumes:
+  mysql_data:
